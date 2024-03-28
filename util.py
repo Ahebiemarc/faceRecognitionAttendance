@@ -12,7 +12,7 @@ def get_button(window, text, color, command, fg='white'):
         bg=color,
         command=command,
         height=2,
-        width=28,
+        width=18,
         font=('Helvetica Bold', 20)
     )
     return button
@@ -25,9 +25,16 @@ def get_img_label(window):
 
 
 def get_entry_text(window):
-    inputText = tk.Text(window, height=2, width=15, font=('Arial', 32))
+    inputText = tk.Text(window, height=1, width=12, font=('Arial', 32))
     return inputText
 
 
 def msg_box(title, desc):
     messagebox.showinfo(title, desc)
+
+def get_text_label(window, txt):
+
+    label = tk.Label(window, text=txt)
+    label.config(font=('sans-serif', 21), justify='left')
+
+    return label
