@@ -1,4 +1,6 @@
 import os
+import subprocess
+import  datetime
 import tkinter as tk
 from util import *
 import cv2
@@ -24,6 +26,8 @@ class App:
         self.db_dir = './db'
         if not os.path.exists(self.db_dir):
             os.mkdir(self.db_dir)
+
+        self.log_path = './log.txt'
 
     def add_webcam(self, label):
         # create the variable only once
@@ -54,7 +58,22 @@ class App:
         self._label.after(20, self.process_webcam)
 
     def login(self):
-        pass
+        unknown_img_path = './.tmp.jpg'
+
+        cv2.imwrite(unknown_img_path, self.most_recent_cap_arr)
+
+        output = str(subprocess.check_output(['face_recognition', self.db_dir, unknown_img_path]))
+        name = output.split(',')[1][:-5]
+
+        if name in ['unknown_person', 'no_persons_found']:
+            msg_box('Oups...', "You're not register or try again ")
+        else:
+            msg_box('Login Successfully', "Welcome {}.".format(name))
+            with open(self.log_path, 'a') as file:
+                file.write(f"{name}, {datetime.datetime.now()}\n")
+                file.close()
+
+        os.remove(unknown_img_path)
 
     def register(self):
         self.register_window = tk.Toplevel(self.main_window)
@@ -87,7 +106,8 @@ class App:
     def accept_register_new_user(self):
         name = self.register_username_input.get(1.0, 'end-1c')
         cv2.imwrite(os.path.join(self.db_dir, '{}.jpg'.format(name)), self.register_new_capture)
-        msg_box('Success', 'User was register successfully')
+        msg_box('Success', 'User was registered successfully')
+        self.register_window.destroy()
 
     def try_again_register_user(self):
         self.register_window.destroy()
